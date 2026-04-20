@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "ducklake-sprouts": {
+      "command": "ducklake-mcp",
+      "type": "stdio",
+      "env": {
+        "DUCKLAKE_URL": "https://objectstore.surf.nl/cea01a7216d64348b7e51e5f3fc1901d:sprouts/catalog.ducklake",
+        "DUCKLAKE_ALIAS": "lake"
+      }
+    }
+  }
+}
