@@ -1,5 +1,5 @@
 ---
-name: ducklake
+name: ori-ducklake
 description: >
   Use this skill when the user asks to query, explore, or analyse open research information
   in the SURF ORI DuckLake catalog — including OpenAlex (works, authors, institutions,
@@ -17,7 +17,7 @@ description: >
 
 ## Available MCP tools
 
-The `ducklake-sprouts` MCP server is connected. Use these tools:
+The `ori-ducklake-sprouts` MCP server is connected. Use these tools:
 
 | Tool | Cost | When to use |
 |---|---|---|

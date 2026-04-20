@@ -27,9 +27,9 @@ from mcp.server.fastmcp import FastMCP
 logging.basicConfig(
     level=os.environ.get("DUCKLAKE_MCP_LOG_LEVEL", "INFO"),
     stream=sys.stderr,
-    format="%(asctime)s %(levelname)s ducklake-mcp %(message)s",
+    format="%(asctime)s %(levelname)s ori-ducklake-mcp %(message)s",
 )
-log = logging.getLogger("ducklake-mcp")
+log = logging.getLogger("ori-ducklake-mcp")
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -165,7 +165,7 @@ def _to_jsonable(v: Any) -> Any:
 # MCP server
 # ---------------------------------------------------------------------------
 mcp = FastMCP(
-    "ducklake-mcp",
+    "ori-ducklake-mcp",
     instructions=(
         "Read-only SQL access to a DuckLake catalog (DuckLake v1.0 spec) hosted "
         "on SURF Object Store. "

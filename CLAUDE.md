@@ -7,7 +7,7 @@ This repository contains Claude agent skills and MCP servers for the SURF Open R
 ```
 agentic-tools/
 ├── skills/                  # Claude skill packages (Markdown instructions)
-│   ├── ducklake/            # Query the DuckLake catalog on SURF Object Store
+│   ├── ori-ducklake/        # Query the DuckLake catalog on SURF Object Store
 │   ├── openaire-oaipmh/     # OAI-PMH harvesting from Dutch repositories
 │   └── urn-nbn/             # URN:NBN resolution via Nationale Resolver
 ├── mcp-servers/             # MCP server source code
@@ -38,7 +38,7 @@ Install and run:
 ```bash
 cd mcp-servers/ori-ducklake-mcp
 pip install -e .
-ducklake-mcp          # stdio transport (default)
+python -m ori_ducklake_mcp    # stdio transport (default)
 ```
 
 Configure via env vars: `DUCKLAKE_URL`, `DUCKLAKE_ALIAS`, `DUCKLAKE_ROW_LIMIT`, `DUCKLAKE_MCP_LOG_LEVEL`.
@@ -48,7 +48,7 @@ Configure via env vars: `DUCKLAKE_URL`, `DUCKLAKE_ALIAS`, `DUCKLAKE_ROW_LIMIT`, 
 Install a skill into Claude Code:
 
 ```bash
-npx skills add surf-ori/agentic-tools@ducklake
+npx skills add surf-ori/agentic-tools@ori-ducklake
 ```
 
 Skills live in `skills/<name>/SKILL.md`. Claude loads the description automatically; the full body is injected when triggered.
