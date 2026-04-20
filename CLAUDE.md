@@ -23,6 +23,7 @@ Exposes the SURF "Sprouts" DuckLake catalog as read-only MCP tools:
 
 | Tool | Purpose |
 |---|---|
+| `catalog_stats` | **Free overview** — file counts, sizes (GB), descriptions for all tables. No data scanning. |
 | `ducklake_info` | Catalog metadata and DuckDB version |
 | `list_schemas` | List schemas in the catalog |
 | `list_tables` | List tables, optionally filtered by schema |

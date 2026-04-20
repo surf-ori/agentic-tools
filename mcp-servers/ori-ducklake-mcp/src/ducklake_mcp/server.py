@@ -168,7 +168,10 @@ mcp = FastMCP(
     "ducklake-mcp",
     instructions=(
         "Read-only SQL access to a DuckLake catalog (DuckLake v1.0 spec) hosted "
-        "on SURF Object Store. Use `list_schemas` and `list_tables` to explore, "
+        "on SURF Object Store. "
+        "Start with `catalog_stats` to get a cheap overview of all tables (file counts, "
+        "sizes in GB, descriptions) without scanning any data. "
+        "Use `list_schemas` and `list_tables` to explore structure, "
         "`describe_table` for column metadata, and `query` to run SELECT SQL. "
         f"The catalog is attached as `{LAKE_ALIAS}`; fully-qualified table names "
         f"look like `{LAKE_ALIAS}.<schema>.<table>`."
@@ -337,6 +340,88 @@ def query(sql: str, limit: int | None = None) -> dict[str, Any]:
 
 
 @mcp.tool()
+def catalog_stats(schema: str | None = None) -> dict[str, Any]:
+    """Return file-level statistics for every table in the DuckLake catalog.
+
+    **No data files are scanned** — all figures come from catalog metadata
+    (the .ducklake catalog file). This is the cheap first call to understand
+    what is in the lake before issuing any SQL queries.
+
+    Returns per-table:
+    - ``file_count``     — number of Parquet files backing the table
+    - ``size_bytes``     — total compressed size on object storage
+    - ``size_gb``        — same, in GB (rounded to 3 dp)
+    - ``description``    — table description from the catalog
+
+    Also returns catalog-level totals (table_count, total_files, total_size_gb).
+
+    Args:
+        schema: Optional schema name to filter (e.g. 'openalex'). Omit for all.
+    """
+    con = get_con()
+
+    # ---- table list + descriptions (catalog metadata, no data scan) ----------
+    params: list[Any] = [LAKE_ALIAS]
+    sql = """
+        SELECT table_schema, table_name, COALESCE(TABLE_COMMENT, '') AS description
+        FROM information_schema.tables
+        WHERE table_catalog = ?
+          AND table_schema NOT IN ('information_schema', 'pg_catalog', 'main')
+    """
+    if schema:
+        sql += " AND table_schema = ?"
+        params.append(schema)
+    sql += " ORDER BY table_schema, table_name"
+    tables = con.execute(sql, params).fetchall()
+
+    # ---- file stats per table (ducklake_list_files = catalog metadata only) --
+    rows: list[dict[str, Any]] = []
+    total_bytes = 0
+    total_files = 0
+
+    for tbl_schema, tbl_name, description in tables:
+        try:
+            agg = con.execute(
+                f"""
+                SELECT COUNT(*)                          AS file_count,
+                       COALESCE(SUM(data_file_size_bytes), 0) AS size_bytes
+                FROM ducklake_list_files(
+                    '{LAKE_ALIAS}', '{tbl_name}', schema => '{tbl_schema}'
+                )
+                """
+            ).fetchone()
+            fc = int(agg[0])
+            sb = int(agg[1])
+        except duckdb.Error as exc:
+            log.warning("catalog_stats: could not get file stats for %s.%s: %s",
+                        tbl_schema, tbl_name, exc)
+            fc, sb = 0, 0
+
+        total_files += fc
+        total_bytes += sb
+        rows.append({
+            "schema":      tbl_schema,
+            "table":       tbl_name,
+            "description": description,
+            "file_count":  fc,
+            "size_bytes":  sb,
+            "size_gb":     round(sb / 1e9, 3),
+        })
+
+    # Sort largest first
+    rows.sort(key=lambda r: r["size_bytes"], reverse=True)
+
+    return {
+        "catalog_url":    DUCKLAKE_URL,
+        "table_count":    len(rows),
+        "total_files":    total_files,
+        "total_size_bytes": total_bytes,
+        "total_size_gb":  round(total_bytes / 1e9, 2),
+        "tables":         rows,
+    }
+
+
+@mcp.tool()
 def list_snapshots() -> list[dict[str, Any]]:
     """List DuckLake snapshots (for time-travel). Uses `ducklake_snapshots()`."""
     con = get_con()
@@ -357,7 +442,7 @@ def table_files(
         schema = "main"
     con = get_con()
     rel = con.query(
-        f"FROM ducklake_list_files('{LAKE_ALIAS}', '{table}', schema_name => '{schema}')"
+        f"FROM ducklake_list_files('{LAKE_ALIAS}', '{table}', schema => '{schema}')"
     )
     return _rows_to_dicts(rel)
 

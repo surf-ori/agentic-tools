@@ -1,8 +1,8 @@
 ---
 name: ducklake
 description: >
-  Use this skill when the user asks to query, explore, or analyse research data
-  in the SURF DuckLake catalog — including OpenAlex (works, authors, institutions,
+  Use this skill when the user asks to query, explore, or analyse open research information
+  in the SURF ORI DuckLake catalog — including OpenAlex (works, authors, institutions,
   funders, topics), OpenAIRE (publications, organizations, projects, datasets,
   software), CRIS (institutional repository publications), or OpenAPC (article
   processing charges). Trigger on phrases like "query the lake", "list tables
@@ -19,23 +19,47 @@ description: >
 
 The `ducklake-sprouts` MCP server is connected. Use these tools:
 
-| Tool | When to use |
-|---|---|
-| `ducklake_info` | First call — confirm catalog URL, DuckDB version, alias (`lake`) |
-| `list_schemas` | Discover schemas: `cris`, `openaire`, `openalex`, `openapc` |
-| `list_tables` | List tables in a schema |
-| `describe_table` | Get column names, types, nullability, row count |
-| `preview_table` | Peek at first rows before writing SQL |
-| `query` | Run read-only SQL against the lake |
-| `list_snapshots` | Enumerate time-travel snapshots |
-| `table_files` | Parquet files backing a table |
+| Tool | Cost | When to use |
+|---|---|---|
+| `catalog_stats` | 🟢 free | **Start here** — file counts, sizes (GB), descriptions for all 32 tables. No data scanning. |
+| `ducklake_info` | 🟢 free | Catalog URL, DuckDB version, extension settings |
+| `list_schemas` | 🟢 free | Discover schemas: `cris`, `openaire`, `openalex`, `openapc` |
+| `list_tables` | 🟢 free | List tables in a schema |
+| `describe_table` | 🟡 slow* | Column names, types, nullability + row count (*COUNT(*) on full table) |
+| `preview_table` | 🟡 medium | First N rows — reads one Parquet file |
+| `query` | 🟡–🔴 varies | Run read-only SQL; cost depends on table size |
+| `list_snapshots` | 🟢 free | Time-travel snapshot history |
+| `table_files` | 🟢 free | Parquet file list + sizes for one table |
 
 ## Approach every question in this order
 
-1. `describe_table` first — column names and types before writing any SQL.
-2. Use **fully-qualified names**: `lake.<schema>.<table>`.
-3. For struct/array columns, use the unnesting patterns below.
-4. Wrap unbounded SELECTs with an explicit `LIMIT`; the server auto-applies 1 000.
+1. **`catalog_stats`** first — get the free overview: which tables exist, how big they are, what they contain.
+2. `describe_table` for the specific table(s) you need — but note it runs `COUNT(*)` which is slow on billion-row tables.
+3. Use **fully-qualified names**: `lake.<schema>.<table>`.
+4. For struct/array columns, use the unnesting patterns below.
+5. Wrap unbounded SELECTs with an explicit `LIMIT`; the server auto-applies 1 000.
+
+## Catalog overview (always start here)
+
+Call `catalog_stats()` — returns immediately from catalog metadata, no data scanned:
+
+```
+catalog_stats()          # all 32 tables
+catalog_stats("openalex")  # only openalex schema
+```
+
+Sample output (abridged, 2026-04-20, 1.08 TB total):
+
+| schema | table | files | GB | description |
+|---|---|---|---|---|
+| openalex | works | 732 | 552.9 | Scholarly documents … |
+| openaire | relations | 113 | 225.4 | Relations between graph entities |
+| openaire | publications | 115 | 200.7 | Research literature |
+| openalex | authors | 66 | 51.6 | Author profiles |
+| openaire | datasets | 16 | 25.1 | Research datasets |
+| cris | publications | 3 | 1.9 | Dutch CRIS records |
+| openapc | apc | 1 | 0.01 | Article processing charges |
+| … | … | … | … | … |
 
 ## Schemas at a glance
 
