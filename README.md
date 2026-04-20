@@ -6,7 +6,7 @@ Claude agent skills and MCP servers for the [SURF](https://www.surf.nl/) Open Re
 
 | Path | Type | Purpose |
 |---|---|---|
-| `skills/ducklake/` | Skill | Teaches Claude to query the DuckLake catalog on SURF Object Store |
+| `skills/ori-ducklake/` | Skill | Teaches Claude to query the DuckLake catalog on SURF Object Store |
 | `skills/openaire-oaipmh/` | Skill | OAI-PMH harvesting patterns for Dutch repositories |
 | `skills/urn-nbn/` | Skill | URN:NBN resolution via the Nationale Resolver |
 | `mcp-servers/ori-ducklake-mcp/` | MCP server | Live read-only SQL access to the DuckLake via DuckDB |
@@ -17,7 +17,7 @@ Claude agent skills and MCP servers for the [SURF](https://www.surf.nl/) Open Re
 ```bash
 cd mcp-servers/ori-ducklake-mcp
 pip install -e .
-ducklake-mcp
+python -m ori_ducklake_mcp
 ```
 
 Add to Claude Desktop (`%APPDATA%\Claude\claude_desktop_config.json`):
@@ -25,9 +25,9 @@ Add to Claude Desktop (`%APPDATA%\Claude\claude_desktop_config.json`):
 ```json
 {
   "mcpServers": {
-    "ducklake-sprouts": {
+    "ori-ducklake-sprouts": {
       "command": "python",
-      "args": ["-m", "ducklake_mcp"],
+      "args": ["-m", "ori_ducklake_mcp"],
       "env": {
         "DUCKLAKE_URL": "https://objectstore.surf.nl/cea01a7216d64348b7e51e5f3fc1901d:sprouts/catalog.ducklake"
       }
@@ -41,26 +41,26 @@ Add to Claude Code (`~/.claude/settings.json`) — or use the project `.claude/s
 ```json
 {
   "mcpServers": {
-    "ducklake-sprouts": {
+    "ori-ducklake-sprouts": {
       "command": "python",
-      "args": ["-m", "ducklake_mcp"],
+      "args": ["-m", "ori_ducklake_mcp"],
       "type": "stdio"
     }
   }
 }
 ```
 
-> **Windows note:** `python -m ducklake_mcp` is preferred over the `ori-ducklake-mcp` script command because pip installs scripts to `%APPDATA%\Python\PythonXXX\Scripts` which may not be on `PATH`. The `python -m` form always works.
+> **Windows note:** `python -m ori_ducklake_mcp` is preferred over the `ori-ducklake-mcp` script command because pip installs scripts to `%APPDATA%\Python\PythonXXX\Scripts` which may not be on `PATH`. The `python -m` form always works.
 
 ## Quick start: skills
 
-Skills teach Claude *how* to think about DuckLake — which tables exist, how to unnest structs, identifier cross-walk patterns, etc. They work alongside the MCP server.
+Skills teach Claude *how* to think about the ORI DuckLake — which tables exist, how to unnest structs, identifier cross-walk patterns, etc. They work alongside the MCP server.
 
 ### Install into Claude Code
 
 ```bash
-# Install the ducklake skill (reads from skills/ducklake/SKILL.md)
-npx skills add surf-ori/agentic-tools@ducklake
+# Install the ori-ducklake skill (reads from skills/ori-ducklake/SKILL.md)
+npx skills add surf-ori/agentic-tools@ori-ducklake
 
 # Install all skills in this repo
 npx skills add surf-ori/agentic-tools@openaire-oaipmh
@@ -74,13 +74,13 @@ Skills are stored in `~/.claude/skills/` (user-global) or `.claude/skills/` (pro
 Claude Desktop doesn't have a skill CLI yet. Instead, copy the skill content directly into a **Project** instruction:
 
 1. Open **Claude Desktop** → **Projects** → your project → **Instructions**.
-2. Copy the contents of `skills/ducklake/SKILL.md` (everything after the YAML front-matter `---` block) into the instructions box.
+2. Copy the contents of `skills/ori-ducklake/SKILL.md` (everything after the YAML front-matter `---` block) into the instructions box.
 3. Attach the reference files as **Project Knowledge** files (drag `references/schemas.md`, `references/patterns.md`, `references/connection.md` into the Knowledge panel).
 
 ### Skill file structure
 
 ```
-skills/ducklake/
+skills/ori-ducklake/
 ├── SKILL.md              ← Trigger description + core instructions
 └── references/
     ├── connection.md     ← Loaded on demand: SURF endpoints, auth, troubleshooting
