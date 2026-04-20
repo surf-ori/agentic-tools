@@ -26,7 +26,8 @@ Add to Claude Desktop (`%APPDATA%\Claude\claude_desktop_config.json`):
 {
   "mcpServers": {
     "ducklake-sprouts": {
-      "command": "ducklake-mcp",
+      "command": "python",
+      "args": ["-m", "ducklake_mcp"],
       "env": {
         "DUCKLAKE_URL": "https://objectstore.surf.nl/cea01a7216d64348b7e51e5f3fc1901d:sprouts/catalog.ducklake"
       }
@@ -35,18 +36,21 @@ Add to Claude Desktop (`%APPDATA%\Claude\claude_desktop_config.json`):
 }
 ```
 
-Add to Claude Code (`~/.claude/settings.json`):
+Add to Claude Code (`~/.claude/settings.json`) — or use the project `.claude/settings.json` already in this repo:
 
 ```json
 {
   "mcpServers": {
     "ducklake-sprouts": {
-      "command": "ducklake-mcp",
+      "command": "python",
+      "args": ["-m", "ducklake_mcp"],
       "type": "stdio"
     }
   }
 }
 ```
+
+> **Windows note:** `python -m ducklake_mcp` is preferred over the `ori-ducklake-mcp` script command because pip installs scripts to `%APPDATA%\Python\PythonXXX\Scripts` which may not be on `PATH`. The `python -m` form always works.
 
 ## Quick start: skills
 

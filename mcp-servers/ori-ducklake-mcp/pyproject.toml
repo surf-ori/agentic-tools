@@ -1,5 +1,5 @@
 [project]
-name = "ducklake-mcp"
+name = "ori-ducklake-mcp"
 version = "0.1.0"
 description = "MCP server for querying a DuckLake v1.0 catalog via DuckDB."
 readme = "README.md"
@@ -17,7 +17,7 @@ dependencies = [
 ]
 
 [project.scripts]
-ducklake-mcp = "ducklake_mcp.server:main"
+ori-ducklake-mcp = "ducklake_mcp.server:main"
 
 [build-system]
 requires = ["hatchling"]
