@@ -1,0 +1,27 @@
+[project]
+name = "ducklake-mcp"
+version = "0.1.0"
+description = "MCP server for querying a DuckLake v1.0 catalog via DuckDB."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Maurice Vanderfeesten (SURF)" }]
+license = { text = "EUPL-1.2" }
+dependencies = [
+    # DuckLake v1.0 ships in DuckDB 1.5.2 (released 2026-04-13).
+    "duckdb>=1.5.2",
+    # FastMCP lives inside the official MCP Python SDK.
+    "mcp>=1.2.0",
+    # DuckDB needs pytz to materialise TIMESTAMPTZ columns returned by
+    # ducklake_snapshots() into Python objects.
+    "pytz",
+]
+
+[project.scripts]
+ducklake-mcp = "ducklake_mcp.server:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/ducklake_mcp"]
