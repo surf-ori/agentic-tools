@@ -7,7 +7,7 @@ Claude agent skills and MCP servers for the [SURF](https://www.surf.nl/) Open Re
 | Path | Type | Purpose |
 |---|---|---|
 | `skills/ori-ducklake/` | Skill | Teaches Claude to query the DuckLake catalog on SURF Object Store |
-| `skills/openaire-oaipmh/` | Skill | OAI-PMH harvesting patterns for Dutch repositories |
+| `skills/oai-pmh/` | Skill | OAI-PMH harvesting patterns for Dutch repositories |
 | `skills/urn-nbn/` | Skill | URN:NBN resolution via the Nationale Resolver |
 | `mcp-servers/ori-ducklake-mcp/` | MCP server | Live read-only SQL access to the DuckLake via DuckDB |
 | `scripts/` | Utilities | Shared Python helpers |

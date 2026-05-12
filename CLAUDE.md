@@ -8,7 +8,7 @@ This repository contains Claude agent skills and MCP servers for the SURF Open R
 agentic-tools/
 ├── skills/                  # Claude skill packages (Markdown instructions)
 │   ├── ori-ducklake/        # Query the DuckLake catalog on SURF Object Store
-│   ├── openaire-oaipmh/     # OAI-PMH harvesting from Dutch repositories
+│   ├── oai-pmh/             # OAI-PMH harvesting from Dutch repositories
 │   └── urn-nbn/             # URN:NBN resolution via Nationale Resolver
 ├── mcp-servers/             # MCP server source code
 │   └── ori-ducklake-mcp/    # Read-only SQL access to DuckLake via DuckDB
