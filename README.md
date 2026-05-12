@@ -14,20 +14,19 @@ Claude agent skills and MCP servers for the [SURF](https://www.surf.nl/) Open Re
 
 ## Quick start: ori-ducklake-mcp
 
-```bash
-cd mcp-servers/ori-ducklake-mcp
-pip install -e .
-python -m ori_ducklake_mcp
-```
+No `pip install` needed — [uv](https://docs.astral.sh/uv/) manages the isolated environment from `uv.lock`.
 
 Add to Claude Desktop (`%APPDATA%\Claude\claude_desktop_config.json`):
 
 ```json
 {
   "mcpServers": {
-    "ori-ducklake-sprouts": {
-      "command": "python",
-      "args": ["-m", "ori_ducklake_mcp"],
+    "ori-ducklake": {
+      "command": "uv",
+      "args": [
+        "--directory", "C:/path/to/agentic-tools/mcp-servers/ori-ducklake-mcp",
+        "run", "ori-ducklake-mcp"
+      ],
       "env": {
         "DUCKLAKE_URL": "https://objectstore.surf.nl/cea01a7216d64348b7e51e5f3fc1901d:sprouts/catalog.ducklake"
       }
@@ -41,16 +40,19 @@ Add to Claude Code (`~/.claude/settings.json`) — or use the project `.claude/s
 ```json
 {
   "mcpServers": {
-    "ori-ducklake-sprouts": {
-      "command": "python",
-      "args": ["-m", "ori_ducklake_mcp"],
+    "ori-ducklake": {
+      "command": "uv",
+      "args": [
+        "--directory", "C:/path/to/agentic-tools/mcp-servers/ori-ducklake-mcp",
+        "run", "ori-ducklake-mcp"
+      ],
       "type": "stdio"
     }
   }
 }
 ```
 
-> **Windows note:** `python -m ori_ducklake_mcp` is preferred over the `ori-ducklake-mcp` script command because pip installs scripts to `%APPDATA%\Python\PythonXXX\Scripts` which may not be on `PATH`. The `python -m` form always works.
+> **Why `uv run`?** `uv` reads `uv.lock` and runs the server in a reproducible, self-contained venv — no manual `pip install` needed. Replace `C:/path/to/agentic-tools` with your actual checkout path. Install uv: `pip install uv` or see [docs.astral.sh/uv](https://docs.astral.sh/uv/).
 
 ## Quick start: skills
 

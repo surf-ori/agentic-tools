@@ -67,9 +67,12 @@ Project settings (`.claude/settings.json` in this repo):
 ```json
 {
   "mcpServers": {
-    "ori-ducklake-sprouts": {
-      "command": "python",
-      "args": ["-m", "ori_ducklake_mcp"],
+    "ori-ducklake": {
+      "command": "uv",
+      "args": [
+        "--directory", "/path/to/agentic-tools/mcp-servers/ori-ducklake-mcp",
+        "run", "ori-ducklake-mcp"
+      ],
       "type": "stdio",
       "env": {
         "DUCKLAKE_URL": "https://objectstore.surf.nl/cea01a7216d64348b7e51e5f3fc1901d:sprouts/catalog.ducklake",
@@ -79,6 +82,8 @@ Project settings (`.claude/settings.json` in this repo):
   }
 }
 ```
+
+> **Why `uv run`?** `uv` reads `uv.lock` in the project directory and runs the server in an isolated, reproducible virtual environment — no global `pip install` needed. Replace `/path/to/agentic-tools` with your actual checkout path.
 
 ## Wire up to Claude Desktop
 
@@ -90,9 +95,12 @@ Edit `claude_desktop_config.json`:
 ```json
 {
   "mcpServers": {
-    "ori-ducklake-sprouts": {
-      "command": "python",
-      "args": ["-m", "ori_ducklake_mcp"],
+    "ori-ducklake": {
+      "command": "uv",
+      "args": [
+        "--directory", "/path/to/agentic-tools/mcp-servers/ori-ducklake-mcp",
+        "run", "ori-ducklake-mcp"
+      ],
       "env": {
         "DUCKLAKE_URL": "https://objectstore.surf.nl/cea01a7216d64348b7e51e5f3fc1901d:sprouts/catalog.ducklake",
         "DUCKLAKE_ALIAS": "lake"
@@ -102,7 +110,7 @@ Edit `claude_desktop_config.json`:
 }
 ```
 
-Restart Claude Desktop; `ori-ducklake-sprouts` should appear in the tools list (🔨).
+Restart Claude Desktop; `ori-ducklake` should appear in the tools list (🔨).
 
 ## Quick sanity check
 

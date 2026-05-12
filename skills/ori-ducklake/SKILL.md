@@ -17,7 +17,7 @@ description: >
 
 ## Available MCP tools
 
-The `ori-ducklake-sprouts` MCP server is connected. Use these tools:
+The `ori-ducklake` MCP server is connected. Use these tools:
 
 | Tool | Cost | When to use |
 |---|---|---|

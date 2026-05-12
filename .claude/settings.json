@@ -1,8 +1,13 @@
 {
   "mcpServers": {
-    "ori-ducklake-sprouts": {
-      "command": "python",
-      "args": ["-m", "ori_ducklake_mcp"],
+    "ori-ducklake": {
+      "command": "uv",
+      "args": [
+        "--directory",
+        "C:/Users/mvn439/Code/agentic-tools/mcp-servers/ori-ducklake-mcp",
+        "run",
+        "ori-ducklake-mcp"
+      ],
       "type": "stdio",
       "env": {
         "DUCKLAKE_URL": "https://objectstore.surf.nl/cea01a7216d64348b7e51e5f3fc1901d:sprouts/catalog.ducklake",
