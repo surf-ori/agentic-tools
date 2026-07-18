@@ -1,0 +1,43 @@
+{
+  "title": "SURF ORI Agentic Tools",
+  "description": "<p>Claude agent skills and MCP servers for the SURF Open Research Information (ORI) stack: querying the DuckLake catalog on SURF Object Store, OAI-PMH harvesting patterns for Dutch repositories, and URN:NBN resolution via the Nationale Resolver.</p>",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "eupl-1.2",
+  "creators": [
+    {
+      "name": "Vanderfeesten, Maurice",
+      "orcid": "0000-0001-6397-4759",
+      "affiliation": "SURF"
+    }
+  ],
+  "keywords": [
+    "Claude",
+    "AI agents",
+    "MCP",
+    "agent skills",
+    "DuckLake",
+    "OAI-PMH",
+    "URN:NBN",
+    "SURF",
+    "open research information"
+  ],
+  "communities": [
+    {
+      "identifier": "surf"
+    }
+  ],
+  "custom": {
+    "code:codeRepository": "https://github.com/surf-ori/agentic-tools",
+    "code:programmingLanguage": [
+      {
+        "id": "python",
+        "title": { "en": "Python" }
+      }
+    ],
+    "code:developmentStatus": {
+      "id": "active",
+      "title": { "en": "Active" }
+    }
+  }
+}
