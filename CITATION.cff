@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "SURF ORI Agentic Tools"
+type: software
+authors:
+  - family-names: Vanderfeesten
+    given-names: Maurice
+    orcid: "https://orcid.org/0000-0001-6397-4759"
+    affiliation: SURF
+version: 1.0.0
+date-released: "2026-07-18"
+doi: 10.5281/zenodo.21424140
+url: "https://github.com/surf-ori/agentic-tools"
+repository-code: "https://github.com/surf-ori/agentic-tools"
+license: EUPL-1.2
+keywords:
+  - Claude
+  - AI agents
+  - MCP
+  - agent skills
+  - DuckLake
+  - OAI-PMH
+  - URN:NBN
+  - SURF
+  - open research information
+abstract: >-
+  Claude agent skills and MCP servers for the SURF Open Research Information
+  (ORI) stack: querying the DuckLake catalog on SURF Object Store, OAI-PMH
+  harvesting patterns for Dutch repositories, and URN:NBN resolution via the
+  Nationale Resolver.
