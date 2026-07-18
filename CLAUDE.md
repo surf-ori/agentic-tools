@@ -9,7 +9,8 @@ agentic-tools/
 ├── skills/                  # Claude skill packages (Markdown instructions)
 │   ├── ori-ducklake/        # Query the DuckLake catalog on SURF Object Store
 │   ├── oai-pmh/             # OAI-PMH harvesting from Dutch repositories
-│   └── urn-nbn/             # URN:NBN resolution via Nationale Resolver
+│   ├── urn-nbn/             # URN:NBN resolution via Nationale Resolver
+│   └── zenodo-github-release-sync/  # Sync a project's GitHub release + Zenodo deposition
 ├── mcp-servers/             # MCP server source code
 │   └── ori-ducklake-mcp/    # Read-only SQL access to DuckLake via DuckDB
 └── scripts/                 # Shared Python utilities
