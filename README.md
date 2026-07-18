@@ -11,6 +11,7 @@ Claude agent skills and MCP servers for the [SURF](https://www.surf.nl/) Open Re
 | `skills/ori-ducklake/` | Skill | Teaches Claude to query the DuckLake catalog on SURF Object Store |
 | `skills/oai-pmh/` | Skill | OAI-PMH harvesting patterns for Dutch repositories |
 | `skills/urn-nbn/` | Skill | URN:NBN resolution via the Nationale Resolver |
+| `skills/zenodo-github-release-sync/` | Skill | Keeps a project's GitHub release and Zenodo archival deposition in sync — versioning, `.zenodo.json`, `CITATION.cff`, file attachments, via the Zenodo REST API |
 | `mcp-servers/ori-ducklake-mcp/` | MCP server | Live read-only SQL access to the DuckLake via DuckDB |
 | `scripts/` | Utilities | Shared Python helpers |
 
@@ -69,6 +70,7 @@ npx skills add surf-ori/agentic-tools@ori-ducklake
 # Install all skills in this repo
 npx skills add surf-ori/agentic-tools@openaire-oaipmh
 npx skills add surf-ori/agentic-tools@urn-nbn
+npx skills add surf-ori/agentic-tools@zenodo-github-release-sync
 ```
 
 Skills are stored in `~/.claude/skills/` (user-global) or `.claude/skills/` (project-local). Claude loads the short `description:` from each `SKILL.md` at startup; the full body is injected only when a conversation triggers it — keeping token cost low.
