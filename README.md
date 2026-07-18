@@ -1,5 +1,7 @@
 # SURF ORI Agentic Tools
 
+[![DOI](https://zenodo.org/badge/doi/10.5281/zenodo.21424140.svg)](https://doi.org/10.5281/zenodo.21424140)
+
 Claude agent skills and MCP servers for the [SURF](https://www.surf.nl/) Open Research Information (ORI) stack.
 
 ## What's in here
