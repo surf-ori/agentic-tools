@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: ori-ducklake-mcp
+    runtime: docker
+    dockerfilePath: ./mcp-servers/ori-ducklake-mcp/Dockerfile
+    dockerContext: ./mcp-servers/ori-ducklake-mcp
+    plan: free
+    envVars:
+      - key: DUCKLAKE_MCP_TRANSPORT
+        value: streamable-http
+    # Deliberately no healthCheckPath: /mcp only accepts real MCP protocol
+    # POSTs with a session, never a plain GET, so a path-based health check
+    # would flap a healthy service (verified: GET /mcp -> 406/400, never
+    # 2xx). Omitting it falls back to Render's TCP-level "is it listening"
+    # check, which this server always satisfies once started.

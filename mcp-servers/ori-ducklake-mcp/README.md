@@ -47,6 +47,29 @@ ori-ducklake-mcp
 
 > **Windows note:** `python -m ori_ducklake_mcp` is preferred over the script command because pip installs scripts to `%APPDATA%\Python\PythonXXX\Scripts` which may not be on `PATH`. The `python -m` form always works.
 
+## Run without cloning
+
+`uvx` (bundled with `uv`) can run the server straight from this GitHub repo — no
+`git clone`, no local checkout:
+
+```bash
+uvx --from "git+https://github.com/surf-ori/agentic-tools.git#subdirectory=mcp-servers/ori-ducklake-mcp" ori-ducklake-mcp
+```
+
+The first run downloads and builds (~15-20s); `uv` caches it after that. Wire it
+into Claude Desktop/Code the same way as the [sections below](#wire-up-to-claude-code),
+just swap the `command`/`args` for:
+
+```json
+{
+  "command": "uvx",
+  "args": [
+    "--from", "git+https://github.com/surf-ori/agentic-tools.git#subdirectory=mcp-servers/ori-ducklake-mcp",
+    "ori-ducklake-mcp"
+  ]
+}
+```
+
 ## Configuration
 
 All via environment variables:
@@ -59,6 +82,8 @@ All via environment variables:
 | `DUCKLAKE_MAX_ROW_LIMIT` | `10000` | Cap on the `limit` argument callers can pass to `query`. |
 | `DUCKLAKE_MCP_LOG_LEVEL` | `INFO` | `DEBUG` / `INFO` / `WARNING`. Logs go to stderr. |
 | `DUCKLAKE_MCP_TRANSPORT` | `stdio` | Set to `streamable-http` for HTTP mode. |
+| `DUCKLAKE_MCP_HOST` | `0.0.0.0` | Bind address in `streamable-http` mode. Ignored for `stdio`. |
+| `DUCKLAKE_MCP_PORT` | `8000` | Bind port in `streamable-http` mode. Ignored for `stdio`. |
 
 ## Wire up to Claude Code
 
@@ -112,6 +137,93 @@ Edit `claude_desktop_config.json`:
 
 Restart Claude Desktop; `ori-ducklake` should appear in the tools list (🔨).
 
+## Run with Docker
+
+```bash
+docker compose up -d --build
+```
+
+Builds the image from the included `Dockerfile` (which runs `uv sync --frozen` to
+install the exact versions from `uv.lock`) and starts it listening on
+`streamable-http` at `http://localhost:8000/mcp`. `restart: unless-stopped` in
+`docker-compose.yml` means it survives reboots and crash-restarts.
+
+Verify it's up:
+
+```bash
+curl -i http://localhost:8000/mcp
+```
+
+A `406` response confirms the server is running and speaking MCP (a full
+handshake needs a real MCP client, not `curl`).
+
+## Deploy — SURF VM (or any Docker host)
+
+Same image as above, just on a machine other than your laptop:
+
+```bash
+git clone https://github.com/surf-ori/agentic-tools.git
+cd agentic-tools/mcp-servers/ori-ducklake-mcp
+docker compose up -d --build
+```
+
+The server listens on `http://<VM-IP>:8000/mcp`. Make sure the VM's
+firewall/security group allows inbound traffic on port 8000 from wherever it
+needs to be reached.
+
+**Updating**, once the repo has new commits:
+
+```bash
+cd agentic-tools && git pull
+cd mcp-servers/ori-ducklake-mcp && docker compose up -d --build
+```
+
+**Note**: this is plain HTTP (no TLS) at a bare IP. Fine for this server — it's
+strictly read-only against a public dataset, so there's nothing sensitive in
+transit — but don't reuse this setup for anything that isn't already public and
+read-only.
+
+## Deploy — public Render instance
+
+This repo includes a `render.yaml` Blueprint at the repo root, so Render can
+deploy it with no manual configuration:
+
+1. In the Render dashboard: **New → Blueprint**, connect the `surf-ori/agentic-tools`
+   GitHub repo.
+2. Render finds `render.yaml`, shows the one service it defines — click **Apply**.
+3. Render builds the `Dockerfile` and assigns an HTTPS URL, e.g.
+   `https://ori-ducklake-mcp.onrender.com`.
+
+Every push to `main` auto-redeploys from then on — that's Render's native GitHub
+integration, nothing custom to maintain.
+
+Verify: `curl -i https://<your-app>.onrender.com/mcp` — expect `406`, same as the
+Docker check above.
+
+**Free-tier caveats**:
+- The service sleeps after ~15 min idle; the next request wakes it in ~30s.
+- ~512MB RAM. Fine for `catalog_stats`, `list_*`, `describe_table`, and most
+  `query` calls, but an aggregation across the full 552GB `openalex.works` table
+  could exceed it. For heavier use, point clients at a self-hosted instance
+  instead (see the SURF VM section above).
+
+## Connecting from LibreChat / EduGenAI
+
+LibreChat connects to remote MCP servers via `librechat.yaml`, no plugin needed:
+
+```yaml
+mcpServers:
+  ori-ducklake:
+    type: streamable-http
+    url: http://<SURF-VM-IP>:8000/mcp
+    chatMenu: true
+```
+
+`type: streamable-http` must be explicit — LibreChat defaults to the older `sse`
+transport for a bare `http(s)://` URL, which this server doesn't speak, and the
+connection will silently fail to work if left implicit. Swap the `url` for the
+public Render instance's URL to use that one instead.
+
 ## Quick sanity check
 
 ```bash
@@ -157,6 +269,18 @@ The URL is wrong or not publicly accessible. Test with `curl -I <DUCKLAKE_URL>`.
 
 **`Catalog version mismatch`**
 You need DuckDB ≥ 1.5.2. Upgrade: `pip install -U "duckdb>=1.5.2"`.
+
+**`ModuleNotFoundError: No module named 'mcp.server.fastmcp'`**
+The installed `mcp` package resolved to `2.0.0` or newer, which restructured its
+internals. This project pins `mcp>=1.2.0,<2.0.0` in `pyproject.toml` — if you hit
+this, you're installing from something that bypassed that pin. Re-run
+`pip install .` / `uv sync` from a fresh checkout of this repo.
+
+**Render health check keeps failing / service won't stay up**
+Don't point Render's `healthCheckPath` at `/mcp` — it only accepts real MCP
+protocol POSTs with a session, so a plain GET health check always fails there.
+Leave `healthCheckPath` unset in `render.yaml` so Render falls back to its
+TCP-level "is it listening" check.
 
 ## References
 

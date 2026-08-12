@@ -206,3 +206,6 @@ marimo/_static/
 marimo/_lsp/
 __marimo__/
 .claude/settings.local.json
+
+# Claude Code worktrees (created by the EnterWorktree tool)
+.claude/worktrees/
