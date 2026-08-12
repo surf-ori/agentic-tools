@@ -9,8 +9,13 @@ license = { text = "EUPL-1.2" }
 dependencies = [
     # DuckLake v1.0 ships in DuckDB 1.5.2 (released 2026-04-13).
     "duckdb>=1.5.2",
-    # FastMCP lives inside the official MCP Python SDK.
-    "mcp>=1.2.0",
+    # FastMCP lives inside the official MCP Python SDK. Upper-bounded below
+    # 2.0.0: that release restructured mcp's package layout and no longer
+    # exposes mcp.server.fastmcp where server.py imports it from. This
+    # matters even though uv.lock pins an exact version, because uvx and
+    # `pip install` from a git URL both bypass the lockfile and re-resolve
+    # fresh against this constraint.
+    "mcp>=1.2.0,<2.0.0",
     # DuckDB needs pytz to materialise TIMESTAMPTZ columns returned by
     # ducklake_snapshots() into Python objects.
     "pytz",
