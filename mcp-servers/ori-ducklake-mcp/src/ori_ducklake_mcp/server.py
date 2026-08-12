@@ -42,6 +42,9 @@ DUCKLAKE_URL = os.environ.get("DUCKLAKE_URL", DEFAULT_DUCKLAKE_URL)
 LAKE_ALIAS = os.environ.get("DUCKLAKE_ALIAS", "lake")
 DEFAULT_ROW_LIMIT = int(os.environ.get("DUCKLAKE_ROW_LIMIT", "1000"))
 MAX_ROW_LIMIT = int(os.environ.get("DUCKLAKE_MAX_ROW_LIMIT", "10000"))
+# Only used in streamable-http mode; harmless when transport=stdio (the default).
+MCP_HOST = os.environ.get("DUCKLAKE_MCP_HOST", "0.0.0.0")
+MCP_PORT = int(os.environ.get("DUCKLAKE_MCP_PORT", "8000"))
 
 # ---------------------------------------------------------------------------
 # Connection: one in-memory DuckDB process, DuckLake attached read-only.
@@ -166,6 +169,8 @@ def _to_jsonable(v: Any) -> Any:
 # ---------------------------------------------------------------------------
 mcp = FastMCP(
     "ori-ducklake-mcp",
+    host=MCP_HOST,
+    port=MCP_PORT,
     instructions=(
         "Read-only SQL access to a DuckLake catalog (DuckLake v1.0 spec) hosted "
         "on SURF Object Store. "
