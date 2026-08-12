@@ -1,0 +1,8 @@
+services:
+  ori-ducklake-mcp:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DUCKLAKE_MCP_TRANSPORT: streamable-http
