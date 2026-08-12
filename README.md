@@ -19,6 +19,17 @@ Claude agent skills and MCP servers for the [SURF](https://www.surf.nl/) Open Re
 
 No `pip install` needed — [uv](https://docs.astral.sh/uv/) manages the isolated environment from `uv.lock`.
 
+There are three ways to connect, depending on what you need:
+
+| Option | Best for | Details |
+|---|---|---|
+| **Run it yourself** | Local dev, a custom catalog URL | Clone this repo, point Claude at it via `uv run` — walkthrough below |
+| **Zero-clone** | Individual Claude Desktop/Code use, no upkeep | `uvx --from git+https://github.com/surf-ori/agentic-tools...` — no checkout needed |
+| **Already-running instance** | Trying it immediately, or wiring into another app (e.g. LibreChat) | Public instance at `https://ori-ducklake-mcp.onrender.com/mcp`, or a self-hosted one |
+
+Full instructions for all three — plus Docker deployment and LibreChat/EduGenAI
+wiring — live in [`mcp-servers/ori-ducklake-mcp/README.md`](mcp-servers/ori-ducklake-mcp/README.md).
+
 Add to Claude Desktop (`%APPDATA%\Claude\claude_desktop_config.json`):
 
 ```json
