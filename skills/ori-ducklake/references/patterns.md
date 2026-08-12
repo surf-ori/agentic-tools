@@ -341,7 +341,55 @@ WHERE id = 'https://openalex.org/W2741809807';
 
 ---
 
-## 8  Time travel
+## 8  Catalog introspection via system tables (cheap, no data scan)
+
+DuckLake catalog metadata (schemas, tables, columns, snapshots) lives in system tables under
+the `__ducklake_metadata_<alias>.` prefix — `__ducklake_metadata_lake.` for this catalog
+(attached as `lake`). Querying them reads only metadata, so it's free/fast regardless of table
+size — useful when `describe_table` is too slow because it also runs `COUNT(*)`.
+
+```sql
+-- All columns of a table, including nested ones, without scanning data
+SELECT column_name, column_type, nesting_level
+FROM __ducklake_metadata_lake.ducklake_column c
+JOIN __ducklake_metadata_lake.ducklake_table t USING (table_id)
+WHERE t.table_name = 'works';
+```
+
+- **`ducklake_column.column_id` is scoped per `table_id`, not globally unique.** When joining
+  `ducklake_column` to anything else keyed by `column_id` (e.g. `ducklake_column_tag`), always
+  add `AND ... table_id = c.table_id` too — otherwise you can silently pick up an unrelated
+  column from a different table that happens to reuse the same locally-scoped id.
+- **`ducklake_column.parent_column` fully exposes nested STRUCT/LIST schema as metadata** — this
+  is the cheap way to enumerate every leaf field of `authorships`, `pids`, or `cerif:Authors`
+  without a live `DESCRIBE` or data scan. A `LIST(STRUCT(...))` column's child is a single
+  synthetic node named `"element"` representing the item type — skip it when building a field
+  path (the real path is `col.field`, never `col.element.field`).
+
+## 9  Performance lessons (same object-store-backed catalog)
+
+- **`USING SAMPLE n ROWS` beats `LIMIT n` for bounding scan cost on large tables.** `LIMIT`
+  still has to scan until it finds matching rows, which can be slow with a selective `WHERE` on
+  a table like `openalex.works` (364 M rows) backed by remote Parquet on SURF Object Store.
+  `SAMPLE` reads a bounded chunk regardless of predicate selectivity — prefer it for exploratory
+  "what does this column look like" queries, and prefer plain `LIMIT` only when the query already
+  has a selective filter that will stop early.
+- **`DISTINCT` on a whole nested STRUCT/LIST value is much more expensive than on a scalar**
+  (tens of seconds vs ~1s, observed on a 364 M-row table) — that's real DuckDB cost, not a bug.
+  If you only need distinct values of one leaf field, project that field first, then `DISTINCT`.
+- **`list_filter(list_col, x -> predicate)` + `len(...) > 0`** is the idiom for "does any element
+  of this array match a predicate" — e.g. "does this work have any NL institution":
+  ```sql
+  SELECT id FROM lake.openalex.works w
+  WHERE len(list_filter(w.authorships, a -> len(list_filter(a.institutions, i -> i.country_code = 'NL')) > 0)) > 0
+  LIMIT 10;
+  ```
+  It composes for multi-level nesting — wrap the next hop's predicate as the lambda body.
+- **`width_bucket()` does not exist in DuckDB.** Hand-roll histogram buckets with
+  `FLOOR`/`LEAST`/`GREATEST` arithmetic instead, e.g.
+  `FLOOR(LEAST(GREATEST(cited_by_count, 0), 1000) / 100) AS bucket`.
+
+## 10  Time travel
 
 ```sql
 -- Available snapshots

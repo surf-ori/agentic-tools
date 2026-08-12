@@ -38,6 +38,7 @@ The `ori-ducklake` MCP server is connected. Use these tools:
 3. Use **fully-qualified names**: `lake.<schema>.<table>`.
 4. For struct/array columns, use the unnesting patterns below.
 5. Wrap unbounded SELECTs with an explicit `LIMIT`; the server auto-applies 1 000.
+6. For exploratory scans without a selective `WHERE`, prefer `USING SAMPLE n ROWS` over `LIMIT n` — it's far cheaper on multi-hundred-million-row tables. See [performance lessons](references/patterns.md#9--performance-lessons-same-object-store-backed-catalog).
 
 ## Catalog overview (always start here)
 
