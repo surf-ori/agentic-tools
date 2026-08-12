@@ -60,3 +60,14 @@ You need DuckDB >= 1.5.2. Upgrade: `pip install -U "duckdb>=1.5.2"`.
 
 **`Required module 'pytz' failed to import`**
 Run `pip install pytz` (it's in the package dependencies but may be missing in a bare env).
+
+## Other ways to connect
+
+Besides running this locally, the MCP server can also be reached without any
+setup:
+
+- **Zero-clone**: `uvx --from "git+https://github.com/surf-ori/agentic-tools.git#subdirectory=mcp-servers/ori-ducklake-mcp" ori-ducklake-mcp` — no checkout needed, `uv` builds and caches it on first run.
+- **Public instance**: `https://ori-ducklake-mcp.onrender.com/mcp` (streamable-http) — already running, useful for a quick try without configuring anything.
+
+Full deployment details (Docker, a self-hosted instance, LibreChat wiring) are in
+[`mcp-servers/ori-ducklake-mcp/README.md`](../../../mcp-servers/ori-ducklake-mcp/README.md).
