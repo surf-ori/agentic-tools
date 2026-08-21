@@ -224,6 +224,35 @@ transport for a bare `http(s)://` URL, which this server doesn't speak, and the
 connection will silently fail to work if left implicit. Swap the `url` for the
 public Render instance's URL to use that one instead.
 
+## Connecting from SURF AI Chat (aichat.surf.nl)
+
+SURF AI Chat lets you register an MCP server as an **extension** through its
+web UI — no config file to edit.
+
+1. Go to **https://aichat.surf.nl/extensions** and click **Add extension**.
+2. Fill in the form:
+   | Field | Value |
+   |---|---|
+   | Name | `ori-ducklake` |
+   | Description | Read-only SQL access to the SURF ORI DuckLake catalog (OpenAlex, OpenAIRE, CRIS, OpenAPC) |
+   | URL of MCP server | `https://ori-ducklake-mcp.onrender.com/mcp` (public instance) or your own self-hosted URL, e.g. `http://<SURF-VM-IP>:8000/mcp` |
+   | Transport type | `Streamable HTTP` |
+   | Authentication type | `No authentication` |
+3. Check **"I trust this source and confirm that I am allowed to use the
+   content within SURF AI Chat"**.
+4. Click **Create extension**.
+
+**Domain whitelisting**: SURF AI Chat only allows outbound MCP connections to
+whitelisted domains — the form says *"The domain must be whitelisted before it
+can be used as an extension. Request access via email."* Before the extension
+will actually connect, ask SURF AI Chat support to whitelist the domain you
+entered (`ori-ducklake-mcp.onrender.com`, or your own VM's hostname/IP if
+self-hosting). Until that's approved, the extension will save but calls to it
+will fail.
+
+Once added, the extension is available across all your chats (not just one
+conversation) — no per-chat setup needed.
+
 ## Quick sanity check
 
 ```bash
